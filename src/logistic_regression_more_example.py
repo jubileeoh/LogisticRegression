@@ -23,7 +23,8 @@ def predict(model_feature_weight_dict, feature_vector_dict):
 ## 새로운 데이터가 들어오면, 예측해본 값과 실제값을 비교해서 모델 파라미터를 튜닝해나간다
 def update_weight(model_feature_weight_dict, feature_vector_dict):
 	## eta 값은 편의상 모든 피쳐에 대해서 동일하게 부여하자
-	eta = 1.0e-2
+	## eta = 1.0e-3
+	eta = 0.5e-2
 	for feature_name, value in feature_vector_dict.iteritems():
 		## 피쳐벡터에는 원래 피쳐값만 있고 맞춰야 되는 click 여부는 없는게 맞는것이겠지만...
 		## 코딩 편의상 click 여부를 피쳐벡터에 넣어 놓았기 때문에 피쳐네임이 'click'인 경우는 무시한다
@@ -35,6 +36,8 @@ def update_weight(model_feature_weight_dict, feature_vector_dict):
 		click = feature_vector_dict['click']
 		## 예측값과 실제값의 차이로 모델 파라미터의 변경분을 (LogLoss의 미분을 참조하여) 구한다음
 		gradient = (f - click) * feature_vector_dict[feature_name] 
+		## gradient = (f - click) * f * (1.0 - f) * feature_vector_dict[feature_name] 
+		## gradient = (f - click) * f * (1.0 - f) * feature_vector_dict[feature_name] + model_feature_weight_dict[feature_name] * 0.01
 		## 모델 파라미터를 업데이트한다
 		weight = model_feature_weight_dict[feature_name]
 		new_weight = weight - eta * gradient
